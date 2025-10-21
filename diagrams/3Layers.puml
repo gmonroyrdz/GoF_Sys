@@ -1,0 +1,14 @@
+@startuml
+title "Arquitectura de 3 capas"
+component Frontend as F{
+    component "Presentation Layer" as PL
+}
+component Backend as B{
+    component "Business Layer" as BL
+    component "Data Access Layer" as DAL
+} 
+F <--> B
+BL <--> DAL
+
+
+@enduml

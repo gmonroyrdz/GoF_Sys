@@ -1,0 +1,24 @@
+@startuml
+title Escuela
+
+entity "empleado" as e{
+* id : INT
+--
+nombre: VARCHAR(100)
+apellido_paterno: VARCHAR(100)
+apellido_materno: VARCHAR(100)
+edad: INT
+}
+
+entity "departamento" as d{
+*id : INT
+--
+nombre: VARCHAR(100)
+direccion: VARCHAR(200)
+--
+* FK empleado.id
+}
+
+' e }o--|| d : tiene
+d ||--o{ e : tiene
+@enduml

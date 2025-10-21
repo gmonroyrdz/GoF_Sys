@@ -1,0 +1,15 @@
+@startuml
+left to right direction
+actor User as U
+actor Admin as A
+rectangle  Sistema{
+usecase "CU1: Gestionar usuarios" as GU
+usecase "CU2: Gestionar roles" as GR
+}
+
+U ..> GU
+A --> GR
+
+A <|- U
+
+@enduml
