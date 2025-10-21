@@ -2,16 +2,17 @@
 title Escuela
 
 entity "empleado" as e{
-* id : INT
+* id : INT <<PK>>
 --
 nombre: VARCHAR(100)
 apellido_paterno: VARCHAR(100)
 apellido_materno: VARCHAR(100)
 edad: INT
+departamento_id: INT <<FK>>
 }
 
 entity "departamento" as d{
-*id : INT
+*id : INT <<PK>>
 --
 nombre: VARCHAR(100)
 direccion: VARCHAR(200)
