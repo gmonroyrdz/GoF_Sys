@@ -1,23 +1,43 @@
 package dal;
 
 import dal.entity.Departamento;
+import java.io.InputStream;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Properties;
 
 /*
  * Clase para establecer comunicación con el DBMS
  */
 public class Connection {
-    // Hardcoding
+    private String url;
+    private String usr_name;
+    private String password;
 
-    // Cadena de conexión (String connection)
-    private String url = "jdbc:mysql://localhost:3306/escuela";
-    private String usr_name = "usrEmployees";
-    private String password = "p455W0rd";
+    public Connection() {
+        loadProperties();
+    }
+
+    private void loadProperties() {
+        try {
+            Properties prop = new Properties();
+            InputStream input = getClass().getClassLoader().getResourceAsStream("config.properties");
+            if (input == null) {
+                System.err.println("No se puede encontrar config.properties");
+                return;
+            }
+            prop.load(input);
+            url = prop.getProperty("db.url");
+            usr_name = prop.getProperty("db.username");
+            password = prop.getProperty("db.password");
+            input.close();
+        } catch (Exception e) {
+            System.err.println("Error al cargar config.properties: " + e.getMessage());
+        }
+    }
 
     public void connection(){
         String query = "SELECT * FROM departamento";
