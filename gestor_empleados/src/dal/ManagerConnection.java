@@ -1,23 +1,29 @@
 package dal;
 
 import dal.entity.Departamento;
+import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+
 /*
  * Clase para establecer comunicación con el DBMS
  */
-public class Connection {
+public class ManagerConnection {
     private String url;
     private String usr_name;
     private String password;
+    private java.sql.Connection conn;
 
-    public Connection() {
+    public ManagerConnection() {
         loadProperties();
     }
 
@@ -34,22 +40,59 @@ public class Connection {
             usr_name = prop.getProperty("db.username");
             password = prop.getProperty("db.password");
             input.close();
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.err.println("Error al cargar config.properties: " + e.getMessage());
         }
     }
 
-    public void connection(){
+    public Connection getConnection(){
+        try{
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection conn = DriverManager.getConnection(url,usr_name,password);
+            return (java.sql.Connection) conn;
+        }catch(ClassNotFoundException | SQLException e){
+            System.err.println(e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * 
+     */
+    public void getEmployees(){
+
+    }
+
+    /**
+     * Obtiene la información de todos los empleados de la BD escuela
+     * @param limit Define el número de resultados que deseamos obtener de la tabla
+     */
+    public void getEmployees(int limit){
+        // String query = "SELECT * FROM empleado LIMIT "+ limit;
+        // Para evitar el SQL Injection
+        String query = "SELECT * FROM empleado LIMIT ?";
+        .
+        .
+        .
+        PreparedStatement st = conn.prepareStatement(query);
+        st.setInt(1, limit);
+
+        
+
+    }
+
+
+    /**
+     * Obtiene la información de los departamentos de la BD escuela
+     */
+    public List<Departamento> getDepartments(){
         String query = "SELECT * FROM departamento";
         try{
-        // Cargar el conector de MYSQL
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        // Conectarse al DBMS
-            java.sql.Connection connection = DriverManager.getConnection(url, usr_name, password);
+           Connection connection =  getConnection();
         // Crear una enunciado de SQL
             Statement statement = connection.createStatement();
         // Ejecución de la consulta
-         ResultSet result = statement.executeQuery(query);
+            ResultSet result = statement.executeQuery(query);
 
          // Proceso de asignación de resultados en los objetos entidad
          List<Departamento> departamentos = new ArrayList();
@@ -71,8 +114,10 @@ public class Connection {
                               ", Dirección: " + dept.getDireccion());
          }
         
+         return departamentos;
         }catch(Exception e){
             System.err.println(e.getMessage());
+            return null;
         }
     }
 }
