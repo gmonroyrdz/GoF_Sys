@@ -1,7 +1,6 @@
 package dal;
 
 import dal.entity.Departamento;
-import java.lang.reflect.Array;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -16,17 +15,17 @@ public class Connection {
     // Hardcoding
 
     // Cadena de conexión (String connection)
-    private String url = "jdbc://mysql://localhost:3306";
+    private String url = "jdbc:mysql://localhost:3306/escuela";
     private String usr_name = "usrEmployees";
     private String password = "p455W0rd";
 
     public void connection(){
-        String query = "SELECT * FROM Departamento";
+        String query = "SELECT * FROM departamento";
         try{
         // Cargar el conector de MYSQL
             Class.forName("com.mysql.cj.jdbc.Driver");
         // Conectarse al DBMS
-            Connection connection = (Connection) DriverManager.getConnection(url, usr_name, password);
+            java.sql.Connection connection = DriverManager.getConnection(url, usr_name, password);
         // Crear una enunciado de SQL
             Statement statement = connection.createStatement();
         // Ejecución de la consulta
@@ -45,6 +44,12 @@ public class Connection {
             departamentos.add(departamento);
          }
 
+         // Mostrar los resultados
+         for(Departamento dept : departamentos) {
+             System.out.println("ID: " + dept.getId() + 
+                              ", Nombre: " + dept.getNombre() + 
+                              ", Dirección: " + dept.getDireccion());
+         }
         
         }catch(Exception e){
             System.err.println(e.getMessage());
