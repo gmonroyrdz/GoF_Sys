@@ -1,6 +1,7 @@
 package dal;
 
 import dal.entity.Departamento;
+import dal.entity.Empleado;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -59,9 +60,32 @@ public class ManagerConnection {
     /**
      * 
      */
-    public void getEmployees(){
+    public List<Empleado> getEmployees(){
+        return  null;
+    }
+
+    public void delete(int id){
 
     }
+
+    public void update(int id, Empleado empleado){
+        getConnection();
+        String query = "UPDATE Empleado SET nombre=?, apellido_paterno=? WHERE id=?";
+        try{
+            PreparedStatement ps = this.conn.prepareStatement(query);
+            ps.setString(1, empleado.getNombre());
+            ps.setString(2, empleado.getApellido_paterno());
+            ps.setInt(3, id);
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+
+    
 
     /**
      * Obtiene la información de todos los empleados de la BD escuela
@@ -71,14 +95,9 @@ public class ManagerConnection {
         // String query = "SELECT * FROM empleado LIMIT "+ limit;
         // Para evitar el SQL Injection
         String query = "SELECT * FROM empleado LIMIT ?";
-        .
-        .
-        .
-        PreparedStatement st = conn.prepareStatement(query);
-        st.setInt(1, limit);
-
         
-
+        //PreparedStatement st = conn.prepareStatement(query);
+       // st.setInt(1, limit);
     }
 
 

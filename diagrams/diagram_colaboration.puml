@@ -1,0 +1,50 @@
+@startuml
+title Diagrama de colaboración UML - Arquitectura 3 capas (Empleado/Departamento)
+
+' ==== Definición de actores y participantes ====
+actor "Usuario" as U
+participant "Presentation Layer" as PL
+participant "EmpleadoService\n(Business Layer)" as BL_E
+participant "DepartamentoService\n(Business Layer)" as BL_D
+participant "EmpleadoDAO\n(Data Access Layer)" as DAL_E
+participant "DepartamentoDAO\n(Data Access Layer)" as DAL_D
+database "MySQL DB" as DB
+
+
+
+' ==== Escenario 1: Crear empleado ====
+U -> PL : 1. solicitar creación de empleado
+PL -> BL_E : 2. crear_empleado(nombre, salario, id_departamento)
+BL_E -> BL_D : 3. verificar existencia de departamento
+BL_D -> DAL_D : 4. obtener_por_id(id_departamento)
+DAL_D -> DB : 5. SELECT departamento
+DB --> DAL_D : 6. resultado
+BL_E -> DAL_E : 7. insertar(empleado)
+DAL_E -> DB : 8. INSERT empleado
+DB --> DAL_E : 9. confirmación
+PL <-- BL_E : 10. mostrar mensaje de éxito
+
+' ==== Escenario 2: Listar empleados ====
+U -> PL : 11. solicitar listado de empleados
+PL -> BL_E : 12. listar_empleados()
+BL_E -> DAL_E : 13. obtener_todos()
+DAL_E -> DB : 14. SELECT * FROM empleado
+DB --> DAL_E : 15. lista empleados
+PL <-- BL_E : 16. mostrar lista
+
+' ==== Escenario 3: Eliminar departamento ====
+U -> PL : 17. eliminar_departamento(id)
+PL -> BL_D : 18. eliminar_departamento(id)
+BL_D -> DAL_E : 19. obtener_por_departamento(id)
+DAL_E -> DB : 20. SELECT empleados por depto
+DB --> DAL_E : 21. resultado
+alt Tiene empleados
+  PL <-- BL_D : 22. Error: no se puede eliminar
+else Sin empleados
+  BL_D -> DAL_D : 23. eliminar(id)
+  DAL_D -> DB : 24. DELETE departamento
+  DB --> DAL_D : 25. confirmación
+  PL <-- BL_D : 26. mensaje de éxito
+end
+
+@enduml

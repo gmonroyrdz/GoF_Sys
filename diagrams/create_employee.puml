@@ -1,0 +1,21 @@
+@startuml
+title Crear empleado sobre la arquitectura de 3 capas :: Diagrama de secuencia
+
+actor Usuario as U
+participant "Presentation Layer"  as PL
+participant "Business Layer" as BL
+participant "Data Access Layer" as DAL
+database "MySQL DB" as DB
+
+U -> PL: Ingresa datos del empleado\n(nombre, apellido_paterno, apellido_materno, id_departamento)
+PL -> BL: crear_empleado(nombre, id_departamento)
+BL -> BL: validar salario > 0
+BL -> BL: verificar existencia del departamento
+BL -> DAL: insertar(empleado)
+DAL -> DB: INSERT INTO empleado (...)
+DB --> DAL: resultado OK
+DAL --> BL: confirmación
+BL --> PL: mensaje "Empleado creado exitosamente"
+PL --> U: mostrar mensaje de éxito
+
+@enduml

@@ -1,0 +1,55 @@
+@startuml
+title Diagrama de Casos de Uso con Arquitectura de 3 Capas
+left to right direction
+
+actor "Usuario" as U
+
+package "Presentation Layer" {
+    usecase "Ingresar datos de empleado" as UC1
+    usecase "Ver listado de empleados" as UC2
+    usecase "Solicitar creación de departamento" as UC3
+    usecase "Solicitar eliminación de departamento" as UC4
+    usecase "Ver listado de departamentos" as UC5
+}
+
+package "Business Layer" {
+    usecase "Validar y crear empleado" as BL1
+    usecase "Validar salario y departamento" as BL2
+    usecase "Validar y crear departamento" as BL3
+    usecase "Validar eliminación de departamento" as BL4
+    usecase "Obtener lista de empleados/departamentos" as BL5
+}
+
+package "Data Access Layer" {
+    usecase "Insertar/Actualizar/Eliminar empleado" as DAL1
+    usecase "Insertar/Actualizar/Eliminar departamento" as DAL2
+    usecase "Obtener empleados/departamentos" as DAL3
+}
+
+' Actor -> Presentation Layer
+U --> UC1
+U --> UC2
+U --> UC3
+U --> UC4
+U --> UC5
+
+' Presentation Layer -> Business Layer
+UC1 --> BL1
+UC1 --> BL2
+UC2 --> BL5
+UC3 --> BL3
+UC4 --> BL4
+UC5 --> BL5
+
+' Business Layer -> Data Access Layer
+BL1 --> DAL1
+BL2 --> DAL3
+BL3 --> DAL2
+BL4 --> DAL2
+BL5 --> DAL3
+
+' Opcional: relaciones de inclusión/extensión
+BL1 .> BL2 : <<incluye>>
+BL4 .> BL5 : <<incluye>>
+
+@enduml
