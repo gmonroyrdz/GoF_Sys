@@ -34,6 +34,8 @@ public class EmpleadoDao {
                 emp.setId(rs.getInt("id"));
                 emp.setNombre(rs.getString("nombre"));
                 emp.setApellido_paterno(rs.getString("apellido_paterno"));
+                emp.setApellido_materno(rs.getString("apellido_materno"));
+                emp.setIdDepartamento(rs.getInt("departamento_id"));
                 empleados.add(emp);
             }
         } catch (SQLException e) {

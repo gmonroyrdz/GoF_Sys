@@ -1,33 +1,34 @@
 
-import dal.DepartamentoDao;
-import dal.EmpleadoDao;
-import dal.entity.Departamento;
+import business.DepartamentoService;
 import dal.entity.Empleado;
 import java.util.List;
 
+
+
 public class App {
     public static void main(String[] args) throws Exception {
-        DepartamentoDao deptoDao = new DepartamentoDao();
-        EmpleadoDao empleadoDao = new EmpleadoDao();
+        DepartamentoService service = new DepartamentoService();
+        List<Empleado> empleados = service.searchById(100);
+        System.out.println("==============\n");
 
-        List<Departamento> departamentos = deptoDao.getDepartments();
-        for (Departamento d : departamentos) {
-            System.out.println("Departamento: " + d.getNombre());
+        empleados = service.searchById(1);
+        for(Empleado e: empleados){
+            System.out.println(e.toString());
+        }
+
+        System.out.println("==============\n");
+
+        empleados = service.searchById(2);
+        for(Empleado e: empleados){
+            System.out.println(e.toString());
+        }
+
+        System.out.println("==============\n");
+
+        empleados = service.searchById(3);
+        for(Empleado e: empleados){
+            System.out.println(e.toString());
         }
         
-        List<Empleado> empleados = empleadoDao.getAll();
-        for (Empleado e : empleados) {
-            System.out.println("Empleado: " + e.getId()+ ", "+ e.getNombre() + " " + e.getApellido_paterno());
-        }
-
-        Empleado empleado1 = empleados.get(1);
-        empleado1.setApellido_paterno("Perez");
-        empleadoDao.update(empleado1.getId(), empleado1);
-
-        empleados = empleadoDao.getAll();
-        for (Empleado e : empleados) {
-            System.out.println("Empleado: " + e.getNombre() + " " + e.getApellido_paterno());
-        }
-
     }
 }
