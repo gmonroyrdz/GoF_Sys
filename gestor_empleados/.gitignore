@@ -1,0 +1,23 @@
+# Ignore compiled class files
+**/*.class
+*.class
+
+# Ignore build output
+/bin/
+
+# Ignore IDE files
+.classpath
+.project
+.settings/
+.vscode/
+.idea/
+
+# Temporary files
+*~
+.DS_Store
+
+# Lock / backup files created during editing
+*.LCK*
+
+# Logs
+*.log
