@@ -63,10 +63,11 @@ public class DepartamentoDao {
     public List<Departamento> getTop(int limit){
         String query = "SELECT * FROM departamento LIMIT ?";
         List<Departamento> departamentos = new ArrayList<>();
-        try(PreparedStatement ps = mgt.getConnection().prepareStatement(query)){
+        try (Connection conn = mgt.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setInt(1, limit);
-            try(ResultSet rs = ps.executeQuery()){
-                while(rs.next()){
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
                     Departamento departamento = new Departamento();
                     departamento.setId(rs.getInt("id"));
                     departamento.setNombre(rs.getString("nombre"));
@@ -83,10 +84,11 @@ public class DepartamentoDao {
     public Departamento getById(int id){
         String query = "SELECT * FROM departamento WHERE id=?";
         Departamento dept = null;
-        try(PreparedStatement ps = mgt.getConnection().prepareStatement(query)){
+        try (Connection conn = mgt.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setInt(1, id);
-            try(ResultSet rs = ps.executeQuery()){
-                if(rs.next()){
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
                     dept = new Departamento();
                     dept.setId(rs.getInt("id"));
                     dept.setNombre(rs.getString("nombre"));
@@ -105,11 +107,12 @@ public class DepartamentoDao {
     public List<Departamento> getByExample(Departamento departamento){
         String query = "SELECT * FROM departamento WHERE nombre=? OR direccion=?";
         List<Departamento> departamentos = new ArrayList<>();
-        try(PreparedStatement ps = mgt.getConnection().prepareStatement(query)){
+        try (Connection conn = mgt.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, departamento.getNombre());
             ps.setString(2, departamento.getDireccion());
-            try(ResultSet rs = ps.executeQuery()){
-                while(rs.next()){
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
                     Departamento d = new Departamento();
                     d.setId(rs.getInt("id"));
                     d.setNombre(rs.getString("nombre"));
@@ -125,7 +128,8 @@ public class DepartamentoDao {
 
     public void save(Departamento departamento){
         String query = "INSERT INTO departamento (nombre, direccion) VALUES (?, ?)";
-        try(PreparedStatement ps = mgt.getConnection().prepareStatement(query)){
+        try (Connection conn = mgt.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, departamento.getNombre());
             ps.setString(2, departamento.getDireccion());
             ps.executeUpdate();
@@ -136,7 +140,8 @@ public class DepartamentoDao {
 
     public void delete(int id){
         String query = "DELETE FROM departamento WHERE id=?";
-        try(PreparedStatement ps = mgt.getConnection().prepareStatement(query)){
+        try (Connection conn = mgt.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setInt(1, id);
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -146,7 +151,8 @@ public class DepartamentoDao {
 
     public void update(int id, Departamento departamento){
         String query = "UPDATE departamento SET nombre=?, direccion=? WHERE id=?";
-        try(PreparedStatement ps = mgt.getConnection().prepareStatement(query)){
+        try (Connection conn = mgt.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, departamento.getNombre());
             ps.setString(2, departamento.getDireccion());
             ps.setInt(3, id);

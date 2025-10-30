@@ -1,6 +1,7 @@
 package dal;
 
 import dal.entity.Empleado;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -24,12 +25,11 @@ public class EmpleadoDao {
      */
     public List<Empleado> getAll(){
         String query = "SELECT * FROM empleado";
-        List<Empleado> empleados = null;
-        try{
-            Statement ps = mgt.getConnection().createStatement();
-            ResultSet rs = ps.executeQuery(query);
-            empleados = new ArrayList<>();
-            while(rs.next()){
+        List<Empleado> empleados = new ArrayList<>();
+        try (Connection conn = mgt.getConnection();
+             Statement ps = conn.createStatement();
+             ResultSet rs = ps.executeQuery(query)) {
+            while (rs.next()) {
                 Empleado emp = new Empleado();
                 emp.setId(rs.getInt("id"));
                 emp.setNombre(rs.getString("nombre"));
@@ -39,7 +39,7 @@ public class EmpleadoDao {
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error fetching all employees", e);
         }
-        return empleados; 
+        return empleados;
     }
     /**
      * Obtiene la información de todos los empleados de la BD escuela
@@ -50,18 +50,18 @@ public class EmpleadoDao {
         // Para evitar el SQL Injection
         String query = "SELECT * FROM empleado LIMIT ?";
 
-        List<Empleado> empleados = null;
-        try {
-            PreparedStatement st = mgt.getConnection().prepareStatement(query);
+        List<Empleado> empleados = new ArrayList<>();
+        try (Connection conn = mgt.getConnection();
+             PreparedStatement st = conn.prepareStatement(query)) {
             st.setInt(1, limit);
-            ResultSet rs = st.executeQuery();
-            empleados = new ArrayList<>();
-            while(rs.next()){
-                Empleado emp = new Empleado();
-                emp.setId(rs.getInt("id"));
-                emp.setNombre(rs.getString("nombre"));
-                emp.setApellido_paterno(rs.getString("apellido_paterno"));
-                empleados.add(emp);
+            try (ResultSet rs = st.executeQuery()) {
+                while (rs.next()) {
+                    Empleado emp = new Empleado();
+                    emp.setId(rs.getInt("id"));
+                    emp.setNombre(rs.getString("nombre"));
+                    emp.setApellido_paterno(rs.getString("apellido_paterno"));
+                    empleados.add(emp);
+                }
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error fetching top employees", e);
@@ -72,15 +72,16 @@ public class EmpleadoDao {
     public Empleado getById(int id){
         String query = "SELECT * FROM empleado WHERE id=?";
         Empleado emp = null;
-        try{
-            PreparedStatement ps = mgt.getConnection().prepareStatement(query);
+        try (Connection conn = mgt.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
-            if(rs.next()){
-                emp = new Empleado();
-                emp.setId(rs.getInt("id"));
-                emp.setNombre(rs.getString("nombre"));
-                emp.setApellido_paterno(rs.getString("apellido_paterno"));
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    emp = new Empleado();
+                    emp.setId(rs.getInt("id"));
+                    emp.setNombre(rs.getString("nombre"));
+                    emp.setApellido_paterno(rs.getString("apellido_paterno"));
+                }
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error fetching employee by id: " + id, e);
@@ -94,20 +95,20 @@ public class EmpleadoDao {
      */
     public List<Empleado> getByExample(Empleado empleado){
         String query = "SELECT * FROM empleado WHERE nombre=? OR apellido_paterno=? OR apellido_materno=?";
-        List<Empleado> empleados = null;
-        try{
-            PreparedStatement ps = mgt.getConnection().prepareStatement(query);
+        List<Empleado> empleados = new ArrayList<>();
+        try (Connection conn = mgt.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, empleado.getNombre());
             ps.setString(2, empleado.getApellido_paterno());
-            ResultSet rs = ps.executeQuery();
-            empleados = new ArrayList<>();
-            while(rs.next()){
-                Empleado emp = new Empleado();
-                emp.setId(rs.getInt("id"));
-                emp.setNombre(rs.getString("nombre"));
-                emp.setApellido_paterno(rs.getString("apellido_paterno"));
-                emp.setApellido_materno(rs.getString("apellido_materno"));
-                empleados.add(emp);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Empleado emp = new Empleado();
+                    emp.setId(rs.getInt("id"));
+                    emp.setNombre(rs.getString("nombre"));
+                    emp.setApellido_paterno(rs.getString("apellido_paterno"));
+                    emp.setApellido_materno(rs.getString("apellido_materno"));
+                    empleados.add(emp);
+                }
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error fetching employees by example", e);
@@ -117,12 +118,11 @@ public class EmpleadoDao {
     
     public void save(Empleado empleado){
         String query = "INSERT INTO empleado (nombre, apellido_paterno) VALUES (?, ?)";
-        try{
-            PreparedStatement ps = mgt.getConnection().prepareStatement(query);
+        try (Connection conn = mgt.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, empleado.getNombre());
             ps.setString(2, empleado.getApellido_paterno());
             ps.executeUpdate();
-
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error saving employee", e);
         }
@@ -130,11 +130,10 @@ public class EmpleadoDao {
 
     public void delete(int id){
         String query = "DELETE FROM empleado WHERE id=?";
-        try{
-            PreparedStatement ps = mgt.getConnection().prepareStatement(query);
+        try (Connection conn = mgt.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setInt(1, id);
             ps.executeUpdate();
-
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error deleting employee id: " + id, e);
         }
@@ -142,13 +141,12 @@ public class EmpleadoDao {
 
     public void update(int id, Empleado empleado){
         String query = "UPDATE empleado SET nombre=?, apellido_paterno=? WHERE id=?";
-        try{
-            PreparedStatement ps = mgt.getConnection().prepareStatement(query);
+        try (Connection conn = mgt.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, empleado.getNombre());
             ps.setString(2, empleado.getApellido_paterno());
             ps.setInt(3, id);
             ps.executeUpdate();
-
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error updating employee id: " + id, e);
         }
