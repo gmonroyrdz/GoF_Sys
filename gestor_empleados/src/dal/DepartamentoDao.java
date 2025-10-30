@@ -8,10 +8,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DepartamentoDao {
 
-    private ManagerConnection mgt;
+    private static final Logger LOGGER = Logger.getLogger(DepartamentoDao.class.getName());
+    private final ManagerConnection mgt;
 
     public DepartamentoDao() {
         this.mgt = new ManagerConnection();
@@ -43,7 +46,7 @@ public class DepartamentoDao {
             }
 
         }catch(SQLException e){
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error fetching all departments", e);
         }
         return departamentos;
     }
@@ -73,7 +76,7 @@ public class DepartamentoDao {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error fetching top departments", e);
         }
         return departamentos;
     }
@@ -92,7 +95,7 @@ public class DepartamentoDao {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error fetching department by id: " + id, e);
         }
         return dept;
     }
@@ -116,7 +119,7 @@ public class DepartamentoDao {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error fetching departments by example", e);
         }
         return departamentos;
     }
@@ -128,7 +131,7 @@ public class DepartamentoDao {
             ps.setString(2, departamento.getDireccion());
             ps.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error saving department", e);
         }
     }
 
@@ -138,7 +141,7 @@ public class DepartamentoDao {
             ps.setInt(1, id);
             ps.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error deleting department id: " + id, e);
         }
     }
 
@@ -150,7 +153,7 @@ public class DepartamentoDao {
             ps.setInt(3, id);
             ps.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error updating department id: " + id, e);
         }
     }
 }

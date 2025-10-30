@@ -7,10 +7,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class EmpleadoDao {
 
-    private ManagerConnection mgt;
+    private static final Logger LOGGER = Logger.getLogger(EmpleadoDao.class.getName());
+    private final ManagerConnection mgt;
 
     public EmpleadoDao() {
         this.mgt = new ManagerConnection();
@@ -34,7 +37,7 @@ public class EmpleadoDao {
                 empleados.add(emp);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error fetching all employees", e);
         }
         return empleados; 
     }
@@ -61,8 +64,7 @@ public class EmpleadoDao {
                 empleados.add(emp);
             }
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error fetching top employees", e);
         }
         return empleados;
     }
@@ -81,7 +83,7 @@ public class EmpleadoDao {
                 emp.setApellido_paterno(rs.getString("apellido_paterno"));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error fetching employee by id: " + id, e);
         }
         return emp;
     }
@@ -108,7 +110,7 @@ public class EmpleadoDao {
                 empleados.add(emp);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error fetching employees by example", e);
         }
         return empleados;
     }
@@ -122,8 +124,7 @@ public class EmpleadoDao {
             ps.executeUpdate();
 
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error saving employee", e);
         }
     }   
 
@@ -135,8 +136,7 @@ public class EmpleadoDao {
             ps.executeUpdate();
 
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error deleting employee id: " + id, e);
         }
     }
 
@@ -150,8 +150,7 @@ public class EmpleadoDao {
             ps.executeUpdate();
 
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error updating employee id: " + id, e);
         }
 
     }
