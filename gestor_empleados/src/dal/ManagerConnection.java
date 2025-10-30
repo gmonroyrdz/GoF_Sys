@@ -1,36 +1,52 @@
 package dal;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 
 /*
- * ManagerConnection ahora delega en un ConnectionProvider. Esto aplica
- * Dependency Inversion: la obtención de la conexión queda abstraída y es
- * fácilmente sustituible (properties, env, pool, tests/mocks).
+ * Clase simple para establecer comunicación con el DBMS.
+ * Lee las propiedades desde config.properties y devuelve una
+ * conexión JDBC usando DriverManager.
  */
 public class ManagerConnection {
-    private final ConnectionProvider provider;
+    private String url;
+    private String usr_name;
+    private String password;
 
-    /** Constructor por defecto: usa PropertiesConnectionProvider (compatibilidad). */
     public ManagerConnection() {
-        this(new PropertiesConnectionProvider());
+        loadProperties();
     }
 
-    /** Constructor para inyectar un proveedor alternativo (útil para tests). */
-    public ManagerConnection(ConnectionProvider provider) {
-        this.provider = provider;
+    private void loadProperties() {
+        try {
+            Properties prop = new Properties();
+            InputStream input = getClass().getClassLoader().getResourceAsStream("config.properties");
+            if (input == null) {
+                System.err.println("No se puede encontrar config.properties");
+                return;
+            }
+            prop.load(input);
+            url = prop.getProperty("db.url");
+            usr_name = prop.getProperty("db.username");
+            password = prop.getProperty("db.password");
+            input.close();
+        } catch (IOException e) {
+            System.err.println("Error al cargar config.properties: " + e.getMessage());
+        }
     }
 
-    /**
-     * Obtiene una conexión. En caso de fallo se lanza una RuntimeException para
-     * no obligar a los callers a manejar SQLException (mantener consistencia
-     * con la implementación previa que retornaba null en error).
-     */
     public Connection getConnection(){
         try{
-            return provider.getConnection();
-        } catch (SQLException e) {
-            throw new IllegalStateException("No se pudo obtener la conexión a la BD", e);
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            return DriverManager.getConnection(url, usr_name, password);
+        }catch(ClassNotFoundException | SQLException e){
+            System.err.println(e.getMessage());
+            return null;
         }
     }
 }
+    
