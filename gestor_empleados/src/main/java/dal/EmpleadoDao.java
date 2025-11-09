@@ -18,11 +18,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class EmpleadoDao {
 
     private static final Logger LOGGER = Logger.getLogger(EmpleadoDao.class.getName());
-    private final DataSource dataSource;
+    private DataSource dataSource;
+    private ManagerConnection mgt;
+
+    public EmpleadoDao() {
+        this.mgt = new ManagerConnection();
+    }
 
     @Autowired
     public EmpleadoDao(DataSource dataSource) {
         this.dataSource = dataSource;
+        this.mgt = null;
+    }
+
+    private Connection getConnection() throws SQLException{
+        if (this.dataSource != null) return this.dataSource.getConnection();
+        return this.mgt.getConnection();
     }
 
     /**
@@ -31,7 +42,7 @@ public class EmpleadoDao {
     public List<Empleado> getAll(){
         String query = "SELECT * FROM empleado";
         List<Empleado> empleados = new ArrayList<>();
-       try (Connection conn = dataSource.getConnection();
+       try (Connection conn = getConnection();
            Statement ps = conn.createStatement();
            ResultSet rs = ps.executeQuery(query)) {
             while (rs.next()) {
@@ -58,7 +69,7 @@ public class EmpleadoDao {
         String query = "SELECT * FROM empleado LIMIT ?";
 
         List<Empleado> empleados = new ArrayList<>();
-       try (Connection conn = dataSource.getConnection();
+       try (Connection conn = getConnection();
            PreparedStatement st = conn.prepareStatement(query)) {
             st.setInt(1, limit);
             try (ResultSet rs = st.executeQuery()) {
@@ -79,7 +90,7 @@ public class EmpleadoDao {
     public Empleado getById(int id){
         String query = "SELECT * FROM empleado WHERE id=?";
         Empleado emp = null;
-       try (Connection conn = dataSource.getConnection();
+       try (Connection conn = getConnection();
            PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
@@ -103,7 +114,7 @@ public class EmpleadoDao {
     public List<Empleado> getByExample(Empleado empleado){
         String query = "SELECT * FROM empleado WHERE nombre=? OR apellido_paterno=? OR apellido_materno=?";
         List<Empleado> empleados = new ArrayList<>();
-       try (Connection conn = dataSource.getConnection();
+       try (Connection conn = getConnection();
            PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, empleado.getNombre());
             ps.setString(2, empleado.getApellido_paterno());
@@ -125,7 +136,7 @@ public class EmpleadoDao {
     
     public void save(Empleado empleado){
         String query = "INSERT INTO empleado (nombre, apellido_paterno) VALUES (?, ?)";
-       try (Connection conn = dataSource.getConnection();
+       try (Connection conn = getConnection();
            PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, empleado.getNombre());
             ps.setString(2, empleado.getApellido_paterno());

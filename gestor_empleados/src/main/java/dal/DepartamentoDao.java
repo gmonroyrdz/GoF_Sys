@@ -17,11 +17,23 @@ import java.util.logging.Logger;
 public class DepartamentoDao {
 
     private static final Logger LOGGER = Logger.getLogger(DepartamentoDao.class.getName());
-    private final DataSource dataSource;
+    private DataSource dataSource;
+    private ManagerConnection mgt;
+
+    public DepartamentoDao() {
+        // legacy constructor used when not managed by Spring (UI mode)
+        this.mgt = new ManagerConnection();
+    }
 
     @Autowired
     public DepartamentoDao(DataSource dataSource) {
         this.dataSource = dataSource;
+        this.mgt = null;
+    }
+
+    private Connection getConnection() throws SQLException {
+        if (this.dataSource != null) return this.dataSource.getConnection();
+        return this.mgt.getConnection();
     }
 
     /**
@@ -30,7 +42,7 @@ public class DepartamentoDao {
     public List<Departamento> getAll(){
         String query = "SELECT * FROM departamento";
         List<Departamento> departamentos = new ArrayList<>();
-        try(Connection conn = dataSource.getConnection();
+        try(Connection conn = getConnection();
             Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery(query)){
 
@@ -68,7 +80,7 @@ public class DepartamentoDao {
     public List<Departamento> getTop(int limit){
         String query = "SELECT * FROM departamento LIMIT ?";
         List<Departamento> departamentos = new ArrayList<>();
-       try (Connection conn = dataSource.getConnection();
+       try (Connection conn = getConnection();
            PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setInt(1, limit);
             try (ResultSet rs = ps.executeQuery()) {
@@ -89,7 +101,7 @@ public class DepartamentoDao {
     public Departamento getById(int id){
         String query = "SELECT * FROM departamento WHERE id=?";
         Departamento dept = null;
-       try (Connection conn = dataSource.getConnection();
+       try (Connection conn = getConnection();
            PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
@@ -112,7 +124,7 @@ public class DepartamentoDao {
     public List<Departamento> getByExample(Departamento departamento){
         String query = "SELECT * FROM departamento WHERE nombre=? OR direccion=?";
         List<Departamento> departamentos = new ArrayList<>();
-       try (Connection conn = dataSource.getConnection();
+       try (Connection conn = getConnection();
            PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, departamento.getNombre());
             ps.setString(2, departamento.getDireccion());
@@ -133,7 +145,7 @@ public class DepartamentoDao {
 
     public void save(Departamento departamento){
         String query = "INSERT INTO departamento (nombre, direccion) VALUES (?, ?)";
-       try (Connection conn = dataSource.getConnection();
+       try (Connection conn = getConnection();
            PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, departamento.getNombre());
             ps.setString(2, departamento.getDireccion());
@@ -145,7 +157,7 @@ public class DepartamentoDao {
 
     public void delete(int id){
         String query = "DELETE FROM departamento WHERE id=?";
-        try (Connection conn = mgt.getConnection();
+        try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setInt(1, id);
             ps.executeUpdate();
@@ -156,7 +168,7 @@ public class DepartamentoDao {
 
     public void update(int id, Departamento departamento){
         String query = "UPDATE departamento SET nombre=?, direccion=? WHERE id=?";
-        try (Connection conn = mgt.getConnection();
+        try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, departamento.getNombre());
             ps.setString(2, departamento.getDireccion());

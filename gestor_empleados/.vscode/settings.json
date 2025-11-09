@@ -1,4 +1,14 @@
 {
+  "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-21",
+      "path": "/usr/lib/jvm/java-21-openjdk-amd64",
+      "default": true
+    }
+  ],
+  "java.jdt.ls.java.home": "/usr/lib/jvm/java-21-openjdk-amd64"
+}
+{
     "java.project.sourcePaths": [
         "src"
     ],
@@ -6,5 +16,6 @@
         "lib/**/*.jar"
     ],
     "java.project.outputPath": "bin",
-    "java.autobuild.enabled": true
+    "java.autobuild.enabled": true,
+    "java.compile.nullAnalysis.mode": "automatic"
 }

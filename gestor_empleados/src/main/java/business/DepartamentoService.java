@@ -21,6 +21,12 @@ public class DepartamentoService {
         this.empDao = empDao;
     }
 
+    // Legacy no-arg constructor for UI mode
+    public DepartamentoService(){
+        this.dptDao = new DepartamentoDao();
+        this.empDao = new EmpleadoDao();
+    }
+
     public List<Empleado> searchById(int idDepartamento){
         
         Departamento dpto = dptDao.getById(idDepartamento);
