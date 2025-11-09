@@ -1,5 +1,8 @@
 package dal;
 import dal.entity.Departamento;
+import javax.sql.DataSource;
+import org.springframework.stereotype.Repository;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,13 +13,15 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@Repository
 public class DepartamentoDao {
 
     private static final Logger LOGGER = Logger.getLogger(DepartamentoDao.class.getName());
-    private final ManagerConnection mgt;
+    private final DataSource dataSource;
 
-    public DepartamentoDao() {
-        this.mgt = new ManagerConnection();
+    @Autowired
+    public DepartamentoDao(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     /**
@@ -25,7 +30,7 @@ public class DepartamentoDao {
     public List<Departamento> getAll(){
         String query = "SELECT * FROM departamento";
         List<Departamento> departamentos = new ArrayList<>();
-        try(Connection conn = mgt.getConnection();
+        try(Connection conn = dataSource.getConnection();
             Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery(query)){
 
@@ -63,8 +68,8 @@ public class DepartamentoDao {
     public List<Departamento> getTop(int limit){
         String query = "SELECT * FROM departamento LIMIT ?";
         List<Departamento> departamentos = new ArrayList<>();
-        try (Connection conn = mgt.getConnection();
-             PreparedStatement ps = conn.prepareStatement(query)) {
+       try (Connection conn = dataSource.getConnection();
+           PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setInt(1, limit);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -84,8 +89,8 @@ public class DepartamentoDao {
     public Departamento getById(int id){
         String query = "SELECT * FROM departamento WHERE id=?";
         Departamento dept = null;
-        try (Connection conn = mgt.getConnection();
-             PreparedStatement ps = conn.prepareStatement(query)) {
+       try (Connection conn = dataSource.getConnection();
+           PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -107,8 +112,8 @@ public class DepartamentoDao {
     public List<Departamento> getByExample(Departamento departamento){
         String query = "SELECT * FROM departamento WHERE nombre=? OR direccion=?";
         List<Departamento> departamentos = new ArrayList<>();
-        try (Connection conn = mgt.getConnection();
-             PreparedStatement ps = conn.prepareStatement(query)) {
+       try (Connection conn = dataSource.getConnection();
+           PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, departamento.getNombre());
             ps.setString(2, departamento.getDireccion());
             try (ResultSet rs = ps.executeQuery()) {
@@ -128,8 +133,8 @@ public class DepartamentoDao {
 
     public void save(Departamento departamento){
         String query = "INSERT INTO departamento (nombre, direccion) VALUES (?, ?)";
-        try (Connection conn = mgt.getConnection();
-             PreparedStatement ps = conn.prepareStatement(query)) {
+       try (Connection conn = dataSource.getConnection();
+           PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, departamento.getNombre());
             ps.setString(2, departamento.getDireccion());
             ps.executeUpdate();

@@ -6,16 +6,19 @@ import dal.entity.Departamento;
 import dal.entity.Empleado;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
-
+@Service
 public class DepartamentoService {
     // Atributos de la clase
-    private DepartamentoDao dptDao;
-    private EmpleadoDao empDao;
+    private final DepartamentoDao dptDao;
+    private final EmpleadoDao empDao;
 
-    public DepartamentoService(){
-        this.dptDao = new DepartamentoDao();
-        this.empDao = new EmpleadoDao();
+    @Autowired
+    public DepartamentoService(DepartamentoDao dptDao, EmpleadoDao empDao){
+        this.dptDao = dptDao;
+        this.empDao = empDao;
     }
 
     public List<Empleado> searchById(int idDepartamento){
@@ -32,6 +35,10 @@ public class DepartamentoService {
                 filtered.add(e);
         }
         return filtered;
+    }
+
+    public List<Departamento> getAllDepartments(){
+        return dptDao.getAll();
     }
 
 }
